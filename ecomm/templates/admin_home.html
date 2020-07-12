@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+	 <meta charset="utf-8">
+	 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	 <meta name="viewport" content="width=device-width, initial-
+	 scale=1">
+	 <title>Admin</title>
+	 <link href="{{ url_for('static',
+	 filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	 <link href="{{ url_for('static', filename='css/main.css') }}"
+	 rel="stylesheet">
+ </head>
+
+ <body>
+ <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+ <div class="container">
+ <div class="navbar-header">
+ <a class="navbar-brand" href="{{ url_for('admin.home')
+ }}">Ecomm Admin</a>
+ {% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+ </div>
+ </div>
+ </div>
+
+ <div class="container">
+ {% block container %}
+ <a href="{{ url_for('admin.add_agent') }}">Add Agent</a>
+ <a href="{{ url_for('admin.add_customer') }}">Add Customer</a>
+ <h2>Update Product:</h2>
+ <select class="selectpicker" data-style="btn-info" data-live-search="true">
+    <optgroup>
+    	{% for id, product in products.items() %}
+        <option>{{product['name']}}</option>
+    	{% endfor %}
+    </optgroup>
+  </select>
+ <a href="{{ url_for('admin.add_product') }}">Add Product</a>
+
+ {% endblock %}
+ </div>
+
+ <!-- jQuery (necessary for Bootstrap) -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+ <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+ </body>
+</html>

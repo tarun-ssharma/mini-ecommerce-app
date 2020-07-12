@@ -1,0 +1,24 @@
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+      
+{% extends 'admin_home.html' %}
+{% block container %}
+
+<form action = "{{ url_for('product.update_sku', sku_id={{sku.id}}) }}" method = "post">
+		<label for="properties">Properties(comma separated list):</label>
+      <input type="text" id="properties" name="properties" value="{{ sku.properties }}"/>
+      <label for="price">Price:</label>
+      <input type="number" id="price" name="price" min="0" step="any" value="{{ sku.price }}"/>
+      <label for="stock_qty">Stock level:</label>
+      <input type="number" id="stock_qty" name="stock_qty" min="0" value="{{ sku.stock_qty }}"/>
+      <p><input type='submit' value ='Update'/></p>
+</form>
+
+{% endblock %}
