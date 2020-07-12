@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block container %}
+ <div class="top-pad">
+ {% for key in products %}
+   {% with products.key as product %}
+	 <h1>{{ product['name'] }}
+	 <small>{{ product['category'] }}</small>
+	 </h1>
+	 <h3>$ {{ product['price'] }}</h3>
+	 {% for sku_id in product.skus %}
+	   {% with product.skus.sku_id as sku %}
+		   {% for property_key in sku %}
+		 	<p>
+		 	{{ property_key }}
+		 	{{ sku.property_key }}
+		 	</p>
+		 	{% endfor %}
+		 	{% if session['role'] == 'Customer' %}
+		 	  <a href="{{ url_for('product.add_to_cart',sku_id={{sku.id}}) }}">Add Sku to Cart</a>
+		 	{% endif %}
+		 	{% if session['role'] == 'Admin' %}
+	   		  <a href="{{ url_for('product.update_sku',sku_id={{sku.id}}) }}">Update sku</a>
+	 		{% endif %}
+	   {% endwith %}
+	 {% endfor %}
+	 {% if session['role'] == 'Admin' %}
+	   	<a href="{{ url_for('product.add_sku',prod_key={{product.id}}) }}">Add sku</a>
+	 {% endif %}
+	{% endwith %}
+ {% endfor %}
+ </div>
+
+ Buttons -- edit
+{% endblock %}
