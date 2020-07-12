@@ -1,0 +1,3 @@
+####### pip install -r rqrmnts.txt #######
+flask
+flask-sqlalchemy
