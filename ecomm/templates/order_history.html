@@ -1,0 +1,27 @@
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+      
+{% extends 'customer_home.html' %}
+{% block container %}
+
+<div>
+      {% for invoice in invoices %}
+         <p>
+            <label for="order_id">Invoice id:</label>
+            <span id = "order_id">{{ invoice.id }}</span>
+            <label for="status">Status:</label>
+            <span id = "status">{{ invoice.status }}</span>
+            <label for="total">Total Amount:</label>
+            <span id = "total">{{ invoice.total }}</span>
+         </p>
+      {% endfor %}
+</div>
+
+{% endblock %}

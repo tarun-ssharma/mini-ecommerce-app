@@ -1,0 +1,38 @@
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+      
+{% extends 'customer_home.html' %}
+{% block container %}
+
+<div>
+   <form action="{{ url_for('customer.place_order') }}" method="POST">
+      <h1> Cart Items:</h1>
+      {% for cart_sku in cart_skus %}
+         <p>
+            <label for="quantity">Quantity:</label>
+            <span id = "quantity">{{ cart_sku.quantity }}</span>
+            <label for="price">Current Price:</label>
+            <span id = "price">{{ cart_sku.price }}</span>
+            {% if last_prices[cart_sku.sku_id]!=-1 %}
+               <label for="price">Last ordered price:</label>
+               <span id = "price">{{ last_prices[cart_sku.sku_id] }}</span>
+            {% endif %}
+            <label for="properties">Properties:</label>
+            <span id = "properties">{{ cart_sku.properties }}</span>
+            {% if stock_qtys[cart_sku.sku_id] < cart_sku.quantity %}
+               <span>Insufficient Stock! Please remove item before placing the order.</span>
+            {% endif %}
+         </p>
+      {% endfor %}
+      <input type="submit" value="Place Order"/>
+   </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+
+<form action = {{ url }} method = "post">
+		<label for="user">Username:</label>
+		<input type="text" id="user" name="user"/>
+ 		<label for="pwd">Password:</label>
+		<input type="password" id="pwd" name="pwd"/>
+      <p><input type='submit' id="login_username" name="login_username" value ='Login'/></p>
+</form>
+<p/>
+<form action = {{ url }} method = "post">
+      <label for="phone">Phone:</label>
+      <input type="number" id="phone" name="phone"/>
+      <p><input type='submit' id="login_phone" name="login_phone" value ='Login via OTP'/></p>
+</form>

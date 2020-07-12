@@ -1,0 +1,15 @@
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+
+<form action = {{ url }} method = "post">
+      <label for="otp">OTP:</label>
+      <input type="number" id="otp" name="otp"/>
+      <p><input type='submit' id="login_otp" name="login_otp" value ='Submit OTP'/></p>
+</form>
