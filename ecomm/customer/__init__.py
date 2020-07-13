@@ -1,1 +1,1 @@
-from ecomm.customer.models import Customer
+from ecomm.customer.models import Customer,FinancialLedgerEntry

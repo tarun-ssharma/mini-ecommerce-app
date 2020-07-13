@@ -28,9 +28,8 @@ class Invoice(db.Model):
 	total = db.Column(db.Integer)
 	agent_id = db.Column(db.Integer,db.ForeignKey('agent.id'))
 
-	def __init__(self,status,customer_id,is_paid,time, total):
+	def __init__(self,status,is_paid,time, total):
 		self.status = status
-		self.customer_id = customer_id
 		self.is_paid = is_paid
 		self.time = time
 		self.total = total
@@ -53,8 +52,6 @@ class CartSkus(db.Model):
 	customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'),primary_key=True)
 	sku_id = db.Column(db.Integer, db.ForeignKey('sku.id'),primary_key=True)
 	quantity =  db.Column(db.Integer)
-	price = db.Column(db.Integer,db.ForeignKey('sku.price'))
-	properties = db.Column(db.String, db.ForeignKey('sku.properties'))
 
 	def __init__(self,quantity):
 		self.quantity= quantity

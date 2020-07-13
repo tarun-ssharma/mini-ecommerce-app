@@ -3,8 +3,7 @@
  <head>
 	 <meta charset="utf-8">
 	 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	 <meta name="viewport" content="width=device-width, initial-
-	 scale=1">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
 	 <title>Customer</title>
 	 <link href="{{ url_for('static',
 	 filename='css/bootstrap.min.css') }}" rel="stylesheet">
@@ -16,36 +15,30 @@
  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
  <div class="container">
  <div class="navbar-header">
- <a class="navbar-brand" href="{{ url_for('admin.home')
- }}">Ecomm Customer</a>
- {% with messages = get_flashed_messages() %}
-         {% if messages %}
-            <ul>
-               {% for message in messages %}
-               <li>{{ message }}</li>
-               {% endfor %}
-            </ul>
-         {% endif %}
-      {% endwith %}
+ <a class="navbar-brand" href="{{ url_for('customer.home')
+ }}">Customer Home</a>
+ <a href="{{ url_for('agent.logout') }}"> Log Out</a>
  </div>
  </div>
  </div>
 
  <div class="container">
  {% block container %}
- <form action="{{ url_for('product.show_product_detail', prod_key={{ request.form['product_id'] }}) }}" method="post">
+ <form action="{{ url_for('product.show_product_detail')}}" method="GET">
   <div>
-   <h2>Browse Products:</h2>
-   <select name="product_id" class="selectpicker" data-style="btn-info" data-live-search="true">
-      <optgroup>
+   <h3>Browse Products:</h3>
+   <select name="prod_key" class="selectpicker" data-style="btn-info" data-live-search="true">
       	{% for id, product in products.items() %}
-          <option dd="{{product.id}}">{{product['name']}}</option>
+          <option value="{{ id }}">{{product['name']}}</option>
       	{% endfor %}
-      </optgroup>
     </select>
-    <input type="submit" value="Browse"/>
+    <input type="submit" value="View details and Add to cart"/>
   </div>
   </form>
+<p>
+  <h3><a href="{{ url_for('customer.show_cart')}}">View Cart</a><br></h3>
+<p>
+  <h3><a href="{{ url_for('customer.show_order_history')}}">View Order History</a></h3>
 
  {% endblock %}
  </div>

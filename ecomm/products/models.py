@@ -1,4 +1,5 @@
 from ecomm import db
+from ecomm import app
 
 '''
 Requirements:
@@ -15,9 +16,9 @@ class Product(db.Model):
 	id =  db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(255),nullable=False)
 	description = db.Column(db.String(255), default="")
-	skus = db.relationship('SKU',backref='product')
+	skus = db.relationship('SKU',backref='product',lazy='dynamic')
 
-	def __init__(self, name, price,stock_qty, description=None):
+	def __init__(self, name, description=None):
 		self.name = str(name)
 		if(description is not None):
 			self.description = description
@@ -30,7 +31,7 @@ class Product(db.Model):
 		'description': self.description,
 		}
 		skus = {}
-		for sku in self.skus:
+		for sku in self.skus.all():
 			sku.get_key_values(skus)
 		products[self.id]['skus'] = skus
 		return products
@@ -43,7 +44,8 @@ class SKU(db.Model):
 	in_stock =  db.Column(db.Boolean,default=False)
 	stock_qty = db.Column(db.Integer,nullable=False)
 	price =  db.Column(db.Float,nullable=False)
-	carts = db.relationship('CartSkus',backref=db.backref('skus',lazy='dynamic'))
+	carts = db.relationship('CartSkus',backref=db.backref('sku'))
+	order_skus = db.relationship('OrderSkus', backref=db.backref('sku',lazy=True))
 	
 	def __init__(self,properties,stock_qty,price):
 		self.properties = properties
@@ -55,12 +57,10 @@ class SKU(db.Model):
 	def get_key_values(self,skus=None):
 		if skus is None:
 			skus = {}
-		properties_list = [pair.split('=') for pair in self.properties.split(',')]
 		sku = {}
-		for pair in properties_list:
-			sku[pair[0]] = pair[1]
 		sku['price'] = self.price
-		sku['stock_qty'] = self.stock_qty
-		sku['in_stock'] = self.in_stock
+		sku['stock quantity'] = self.stock_qty
+		sku['In stock'] = self.in_stock
+		sku['Properties'] = self.properties
 		skus[self.id] = sku
 		return skus

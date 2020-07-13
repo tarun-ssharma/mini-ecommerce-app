@@ -1,8 +1,11 @@
 
 from flask import Blueprint, request, render_template, session, redirect, url_for, flash
-from ecomm.invoice import Invoice,OrderStates
+from ecomm.invoice import Invoice,OrderStates, CartSkus, OrderSkus
 from datetime import datetime
 from ecomm.customer.models import Customer
+from ecomm.products.views import get_all_products
+from ecomm.products import SKU
+from ecomm import db
 
 customer_bp = Blueprint('customer',__name__)
 
@@ -71,15 +74,20 @@ def show_cart():
 		cart_skus = CartSkus.query.filter_by(customer_id=session['user_id']).all()
 		last_prices = {}
 		stock_qtys = {}
+		prices = {}
+		properties = {}
 		for cart_sku in cart_skus:
-			stock_qtys[cart_sku.sku_id] = SKU.query.get_or_404(cart_sku.sku_id).stock_qty
-			last_invoice = Invoice.query.filter_by(customer_id=session['user_id']).filter_by(Invoice.order_skus.any(sku_id=cart_sku.sku_id)).order_by(time).last()
+			sku = SKU.query.get_or_404(cart_sku.sku_id)
+			properties[sku.id] = sku.properties
+			prices[sku.id] = sku.price
+			stock_qtys[cart_sku.sku_id] = sku.stock_qty
+			last_invoice = Invoice.query.filter_by(customer_id=session['user_id']).filter(Invoice.order_skus.any(sku_id=cart_sku.sku_id)).order_by(Invoice.time.desc()).first()
 			if last_invoice is None:
 				last_prices[cart_sku.sku_id] = -1
 			else:	
 				last_prices[cart_sku.sku_id] = OrderSkus.query.filter_by(order_id=last_invoice.id).first().price
 
-		return render_template('show_cart.html',cart_skus=cart_skus,last_prices=last_prices,stock_qtys=stock_qtys)
+		return render_template('show_cart.html',cart_skus=cart_skus,last_prices=last_prices,stock_qtys=stock_qtys,prices=prices,properties=properties)
 
 @customer_bp.route('/orderHistory')
 def show_order_history():
@@ -94,26 +102,41 @@ def place_order():
 	if(not is_logged_in() or not is_customer()):
 		return redirect(url_for('customer.login'))
 	else:
-		try:
-			customer_id = session['user_id']
-			cart_skus = CartSkus.query.filter_by(customer_id=customer_id).all()
-			total = 0
-			order_skus = []
-			for cart_sku in cart_skus:
-				sku_stock_qty = SKU.query.get_or_404(cart_sku.sku_id).stock_qty
-				if(cart_sku.quantity > sku_stock_qty):
-					flash('Sku'+cart_sku.sku_id+' has insufficient stock')
-					return redirect(url_for('customer.show_cart'))
-				subtotal = sku_stock_qty*(cart_sku.price)
-				order_skus.append(OrderSkus(sku_stock_qty,cart_sku.price,subtotal))
-				total += subtotal
+		with db.session.no_autoflush:
+			try:
+				customer_id = session['user_id']
+				cart_skus = CartSkus.query.filter_by(customer_id=customer_id).all()
+				customer = Customer.query.get_or_404(customer_id)
+				if cart_skus is None:
+					abort(404, description="Cart has no items!")
+				total = 0
+				order_skus = []
+				for cart_sku in cart_skus:
+					sku = SKU.query.get_or_404(cart_sku.sku_id)
+					sku_stock_qty = sku.stock_qty
+					if(cart_sku.quantity > sku_stock_qty):
+						raise Exception('Sku'+cart_sku.sku_id+' has insufficient stock')
+					subtotal = cart_sku.quantity*(sku.price)
+					order_sku = OrderSkus(cart_sku.quantity,sku.price,subtotal)
+					if(cart_sku.quantity == sku_stock_qty):
+						sku.in_stock = False
+					sku.stock_qty -= cart_sku.quantity
+					sku.order_skus.append(order_sku)
+					order_skus.append(order_sku)
+					total += subtotal
+					db.session.delete(cart_sku)
 
-			invoice = Invoice(OrderStates.ACCEPTED, customer_id, False, datetime.now(), total)
-			invoice.order_skus.extend(order_skus)
-			db.session.add(invoice)
-			db.session.commit()
-			flash('Order Placed!')
-			return redirect(url_for('customer.show_order_history'))
-		except Exception as e:
-			flash('Could not place the order.' + str(e))
-			return redirect(url_for('customer.show_cart'))
+				invoice = Invoice(OrderStates.ACCEPTED, False, datetime.now(), total)
+				invoice.order_skus.extend(order_skus)
+				customer.orders.append(invoice)
+				db.session.add(invoice)
+				for order_sku in order_skus:
+				  db.session.add(order_sku)
+				
+				db.session.commit()
+				flash('Order Placed!')
+				return redirect(url_for('customer.show_order_history'))
+			except Exception as e:
+				db.session.rollback()
+				flash('Could not place the order.' + str(e))
+				return redirect(url_for('customer.show_cart'))

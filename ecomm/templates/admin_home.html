@@ -17,7 +17,8 @@
  <div class="container">
  <div class="navbar-header">
  <a class="navbar-brand" href="{{ url_for('admin.home')
- }}">Ecomm Admin</a>
+ }}">Admin Home</a>
+ <a href="{{ url_for('admin.logout') }}"> Log Out</a>
  {% with messages = get_flashed_messages() %}
          {% if messages %}
             <ul>
@@ -33,17 +34,39 @@
 
  <div class="container">
  {% block container %}
- <a href="{{ url_for('admin.add_agent') }}">Add Agent</a>
- <a href="{{ url_for('admin.add_customer') }}">Add Customer</a>
- <h2>Update Product:</h2>
+ <h3>Browse Agents:</h3>
  <select class="selectpicker" data-style="btn-info" data-live-search="true">
     <optgroup>
-    	{% for id, product in products.items() %}
-        <option>{{product['name']}}</option>
-    	{% endfor %}
+      {% for id, agent in agents.items() %}
+        <option>{{agent['first_name'] + ' ' + agent['last_name']}}</option>
+      {% endfor %}
     </optgroup>
   </select>
- <a href="{{ url_for('admin.add_product') }}">Add Product</a>
+  <p/>
+ <h3><a href="{{ url_for('admin.add_agent') }}">Add Agent</a><br></h3>
+ <h3>Browse Customers:</h3>
+ <select class="selectpicker" data-style="btn-info" data-live-search="true">
+    <optgroup>
+      {% for id, customer in customers.items() %}
+        <option>{{customer['first_name'] + ' ' + customer['last_name']}}</option>
+      {% endfor %}
+    </optgroup>
+  </select>
+  <p/>
+ <h3><a href="{{ url_for('admin.add_customer') }}">Add Customer</a></h3>
+
+ <form action="{{ url_for('product.show_product_detail')}}" method="GET">
+ <h3>Browse Product:</h3>
+ <select name='prod_key' class="selectpicker" data-style="btn-info" data-live-search="true">
+    	{% for id, product in products.items() %}
+        <option value="{{ id }}">{{product['name']}}</option>
+    	{% endfor %}
+  </select>
+  <input type='submit' value="Show And/Or edit product details"/>
+</form>
+
+  <br>
+ <a href="{{ url_for('product.add_product') }}">Add Product</a>
 
  {% endblock %}
  </div>

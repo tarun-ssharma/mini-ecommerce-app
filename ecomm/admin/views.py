@@ -14,6 +14,18 @@ def is_logged_in():
 def is_admin():
 	return ('role' in session) and (session['role'] == 'ADMIN')
 
+def get_all_agents():
+	agents = {}
+	for agent in Agent.query.all():
+		agents[agent.id] = agent
+	return agents
+
+def get_all_customers():
+	customers = {}
+	for customer in Customer.query.all():
+		customers[customer.id] = customer
+	return customers
+
 @admin_bp.route('/login',methods=['GET','POST'])
 def login():
 	if request.method == 'POST':
@@ -36,7 +48,7 @@ def home():
 		return redirect(url_for('admin.login'))
 	else:
 		#Logged in admin
-		return render_template('admin_home.html',products=get_all_products())
+		return render_template('admin_home.html',products=get_all_products(),agents=get_all_agents(),customers=get_all_customers())
 
 @admin_bp.route('/logout')
 def logout():

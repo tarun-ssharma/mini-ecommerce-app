@@ -8,15 +8,15 @@
          {% endif %}
       {% endwith %}
 
-{% extends 'base.html' %}
+{% extends 'agent_home.html' %}
 {% block container %}
- <div class="top-pad">
- {% for id, product in products.items() %}
- <div class="well">
- <h2>
- <a href="{{ url_for('product.show_product_detail', prod_key=id) }}">{{product['name'] }}</a>
- </h2>
- </div>
- {% endfor %}
- </div>
+
+<h3>Transactions:</h3>
+{% for ledgerEntry in ledgerEntries %}
+	Time:{{ ledgerEntry.date_time }}
+	Amount:{{ ledgerEntry.amount }}
+	Balance:{{ ledgerEntry.balance }}
+	<br>
+{% endfor %}
+
 {% endblock %}

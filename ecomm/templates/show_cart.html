@@ -19,13 +19,13 @@
             <label for="quantity">Quantity:</label>
             <span id = "quantity">{{ cart_sku.quantity }}</span>
             <label for="price">Current Price:</label>
-            <span id = "price">{{ cart_sku.price }}</span>
+            <span id = "price">{{ prices[cart_sku.sku_id] }}</span>
             {% if last_prices[cart_sku.sku_id]!=-1 %}
                <label for="price">Last ordered price:</label>
                <span id = "price">{{ last_prices[cart_sku.sku_id] }}</span>
             {% endif %}
             <label for="properties">Properties:</label>
-            <span id = "properties">{{ cart_sku.properties }}</span>
+            <span id = "properties">{{ properties[cart_sku.sku_id] }}</span>
             {% if stock_qtys[cart_sku.sku_id] < cart_sku.quantity %}
                <span>Insufficient Stock! Please remove item before placing the order.</span>
             {% endif %}

@@ -11,7 +11,7 @@
 {% extends 'admin_home.html' %}
 {% block container %}
 
-<form action = "{{ url_for('product.update_sku', sku_id={{sku.id}}) }}" method = "post">
+<form action = "{{ url_for('product.update_sku', sku_id=sku.id) }}" method = "post">
 		<label for="properties">Properties(comma separated list):</label>
       <input type="text" id="properties" name="properties" value="{{ sku.properties }}"/>
       <label for="price">Price:</label>

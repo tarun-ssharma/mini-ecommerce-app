@@ -1,34 +1,52 @@
-{% extends 'base.html' %}
+{% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+               <li>{{ message }}</li>
+               {% endfor %}
+            </ul>
+         {% endif %}
+      {% endwith %}
+
+{% if session['role'] == 'CUSTOMER' %}
+  {% extends 'customer_home.html' %}
+{% endif %}
+
+{% if session['role'] == 'ADMIN' %}
+  {% extends 'admin_home.html' %}
+{% endif %}
+
 {% block container %}
  <div class="top-pad">
  {% for key in products %}
-   {% with products.key as product %}
-	 <h1>{{ product['name'] }}
-	 <small>{{ product['category'] }}</small>
-	 </h1>
-	 <h3>$ {{ product['price'] }}</h3>
+   {% with product = products[key] %}
+	 <h1>{{ product['name'] }}<br>
+	 <small>{{ product['description'] }}</small><br>
+	 ---------------------------------
 	 {% for sku_id in product.skus %}
-	   {% with product.skus.sku_id as sku %}
+	   {% with sku = product.skus[sku_id] %}
+	       <h4>SKU: {{sku_id}}</h4>
 		   {% for property_key in sku %}
-		 	<p>
-		 	{{ property_key }}
-		 	{{ sku.property_key }}
-		 	</p>
+		 	<h6>{{ property_key }}:
+		 	{{ sku[property_key] }}</h6>
 		 	{% endfor %}
-		 	{% if session['role'] == 'Customer' %}
-		 	  <a href="{{ url_for('product.add_to_cart',sku_id={{sku.id}}) }}">Add Sku to Cart</a>
+		 	{% if session['role'] == 'CUSTOMER' %}
+		 	  <form action="{{ url_for('product.add_to_cart',sku_id=sku_id) }}" method="POST">
+		 	  	<label for="quantity">Quantity</label>
+		 	  	<input type="number" name="quantity" id="quantity" min="1"/>
+		 	    <input type="submit" value="Add Sku to cart"/><br>
+		 	  </form>
 		 	{% endif %}
-		 	{% if session['role'] == 'Admin' %}
-	   		  <a href="{{ url_for('product.update_sku',sku_id={{sku.id}}) }}">Update sku</a>
+		 	{% if session['role'] == 'ADMIN' %}
+	   		  <a href="{{ url_for('product.update_sku',sku_id=sku_id) }}">Update sku</a><br>
 	 		{% endif %}
 	   {% endwith %}
 	 {% endfor %}
-	 {% if session['role'] == 'Admin' %}
-	   	<a href="{{ url_for('product.add_sku',prod_key={{product.id}}) }}">Add sku</a>
+	 <br>
+	 {% if session['role'] == 'ADMIN' %}
+	   	<a href="{{ url_for('product.add_sku',prod_key=key) }}">Add another sku</a>
 	 {% endif %}
 	{% endwith %}
  {% endfor %}
  </div>
-
- Buttons -- edit
 {% endblock %}
