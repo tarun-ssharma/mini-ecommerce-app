@@ -17,6 +17,9 @@ class Customer(User):
     	'polymorphic_identity':'customer'
     }
 
+'''
+Class to serve as a record tracker for all the transactions involving customers.
+'''
 class FinancialLedgerEntry(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'))

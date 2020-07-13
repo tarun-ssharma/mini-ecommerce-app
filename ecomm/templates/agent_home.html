@@ -3,8 +3,7 @@
  <head>
 	 <meta charset="utf-8">
 	 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	 <meta name="viewport" content="width=device-width, initial-
-	 scale=1">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
 	 <title>Agent</title>
 	 <link href="{{ url_for('static',
 	 filename='css/bootstrap.min.css') }}" rel="stylesheet">
@@ -35,17 +34,24 @@
  <div class="container">
  {% block container %}
  <form action="{{ url_for('agent.display_customer_details') }}" method="POST">
- <label for="customer_id">Customer Id:</label>
- <input type="integer" id="customer_id" name="customer_id">
- <input type="submit" name="function" value="Display Orders">
- <input type="submit" name="function" value="Display financial transactions">
+	 <label for="customer_id">Customer Id:</label>
+	 <input type="integer" id="customer_id" name="customer_id">
+	 <label for="starting_date">Starting date:</label>
+	 <input type="datetime-local" name="starting_date" id="starting_date" value="2000-01-01T00:00"/>
+	 <label for="ending_date">Ending date:</label>
+	 <input type="datetime-local" id="ending_date" name="ending_date" value="2025-06-12T19:30"/>
+	 <div>
+	 <input type="submit" name="function" value="Display Orders">
+	 <input type="submit" name="function" value="Display financial transactions"></div>
  </form>
 <p>
 <p>
-  <form action="{{ url_for('agent.record_order_payment') }}" method="POST">
+  <form action="{{ url_for('agent.update_order') }}" method="POST">
  <label for="order_id">Order Id:</label>
  <input type="integer" id="order_id" name="order_id">
- <input type="submit" value="Record Payment">
+ <input type="submit" name="function" value="Record Payment">
+ <input type="submit" name="function" value="Mark Delivered">
+ <input type="submit" name="function" value="Cancel Order">
  </form>
 
  {% endblock %}

@@ -15,5 +15,6 @@ app.register_blueprint(products_bp, url_prefix='/products')
 app.register_blueprint(agent_bp, url_prefix='/agent')
 app.register_blueprint(customer_bp, url_prefix='/customer')
 
+
 #db.drop_all()
 db.create_all()

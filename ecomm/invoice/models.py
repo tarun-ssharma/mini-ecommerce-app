@@ -2,25 +2,12 @@ from ecomm import db
 import enum
 
 '''
-Requirements:
-- an Invoice : has multiple skus
-- order state is updatable by agent from confirmed to cancelled
-- cash payment is recorded by agent any random time 
-- states -- “Confirmed/Accepted/Placed?”, “Delivered”, “Cancelled”
-- on order accept -- invoice created, financial ledger updated, SMS sent to customer
-- on marking order cancelled before delivered -- reverse financial ledger entries are created
-- List order history for each customer -- accessible by that customer and agent
+ACCEPTED/CANCELLED/DELIVERED orders.
 '''
-
-class OrderStates(enum.Enum):
-	ACCEPTED = 'Accepted'
-	DELIVERED = 'DELIVERED'
-	CANCELLED = 'Cancelled'
-
 class Invoice(db.Model):
 	__tablename__ = 'order'
 	id = db.Column(db.Integer,primary_key=True)
-	status = db.Column(db.Enum(OrderStates))
+	status = db.Column(db.String(50))
 	customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'))
 	is_paid = db.Column(db.Boolean,default=False)
 	time = db.Column(db.DateTime)
@@ -34,6 +21,9 @@ class Invoice(db.Model):
 		self.time = time
 		self.total = total
 
+'''
+SKU Details of orders.
+'''
 class OrderSkus(db.Model):
 	__tablename__ = 'order_skus'
 	order_id = db.Column(db.Integer, db.ForeignKey('order.id'),primary_key=True)
@@ -47,6 +37,9 @@ class OrderSkus(db.Model):
 		self.price = price
 		self.subtotal = subtotal
 
+'''
+SKU details of cart items.
+'''
 class CartSkus(db.Model):
 	id = db.Column(db.Integer,primary_key=True)
 	customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'),primary_key=True)

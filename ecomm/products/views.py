@@ -4,21 +4,9 @@ from ecomm import db
 from ecomm.invoice import CartSkus
 from ecomm.customer import Customer
 
+#Initialize the products blueprint.
 products_bp = Blueprint('product',__name__)
 
-'''
-Requirements:
-- updatable -- prod descr., price, stock level, status
-- can add a new product
-- can update an existing product
-- can add a SKU to cart
-- last price(if ordered) shown for every sku in cart
-- only in_stock skus allowed to be ordered
-- an Invoice : has multiple skus
-
-- addProd button -- HOME PAGE
-- search prod by name -- prod details page -- edit product / CREATE skus / SELECT AND ADD SKUS TO CART (addSkuToCart) -- HOME + PROD DETAILS PAGES
-'''
 def is_logged_in():
 	return 'username' in session
 
@@ -32,6 +20,9 @@ def is_customer():
 	return ('role' in session) and (session['role'] == 'CUSTOMER')
 
 def get_all_products():
+	'''
+	Get all the products and associated skus.
+	'''
 	products = {}
 	for product in Product.query.all():
 		#Is python pass by object
@@ -46,15 +37,20 @@ def show_all():
 @products_bp.route('/detail/<prod_key>')
 @products_bp.route('/detail')
 def show_product_detail(prod_key=None):
+	'''
+	Show details about a product and its related skus.
+	'''
 	if(prod_key is None):
 		prod_key = request.args.get('prod_key')
 	product = Product.query.get_or_404(int(prod_key))
 	return render_template('show_product_details.html',products=product.get_key_values())
 
-#Search prod by name
 
 @products_bp.route('/addProduct',methods=['GET','POST'])
 def add_product():
+	'''
+	Add a new product to the catalog.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
@@ -86,6 +82,9 @@ def add_product():
 
 @products_bp.route('/<prod_key>/addSKU',methods=['GET','POST'])
 def add_sku(prod_key):
+	'''
+	Add a new sku to an existing product.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
@@ -111,6 +110,9 @@ def add_sku(prod_key):
 
 @products_bp.route('/<sku_id>/updateSKU/',methods=['GET','POST'])
 def update_sku(sku_id):
+	'''
+	Update a sku with fields like price, stock level etc.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
@@ -145,6 +147,9 @@ def update_sku(sku_id):
 
 @products_bp.route('/<sku_id>/addSkuToCart',methods=['POST'])
 def add_to_cart(sku_id):
+	'''
+	Add a sku to cart. A product with no skus can't be added to cart.
+	'''
 	if (not is_customer_logged_in()) or (not is_customer()):
 		return redirect(url_for('customer.login'))
 	else:
@@ -154,13 +159,13 @@ def add_to_cart(sku_id):
 		sku = SKU.query.get_or_404(int(sku_id))
 		customer = Customer.query.get_or_404(customer_id)
 		cart_entry = CartSkus.query.filter_by(sku_id=int(sku_id)).filter_by(customer_id=int(customer_id)).first()
-		#CHECK FOR STOCK_QTY FOR THAT SKU
+		#Check if we have sufficient stocks for the selected SKUs.
 		if quantity > sku.stock_qty:
 			flash('Insufficient stock!')
 			return redirect(url_for('product.show_product_detail',prod_key=sku.product_id))
 		if cart_entry is None:
 			with db.session.no_autoflush:
-				#This sku is being added for first time to cart.
+				#Case 1: This sku is being added for first time to cart.
 				try:
 					cart_entry = CartSkus(quantity)
 					cart_entry.id = 1234
@@ -173,7 +178,7 @@ def add_to_cart(sku_id):
 					db.session.rollback()
 					flash(str(e))
 		else:
-			#This sku is already present in the cart.
+			#Case 2: This sku is already present in the cart.
 			try:
 				cart_entry.quantity += quantity
 				db.session.commit()

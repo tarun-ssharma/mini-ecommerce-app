@@ -6,6 +6,9 @@ user_roles = db.Table('user_roles',
 	db.Column('role_id',db.Integer, db.ForeignKey('role.id'),primary_key=True)
 	)
 
+'''
+Parent class for Admin, Agent and Customer Users.
+'''
 class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String)

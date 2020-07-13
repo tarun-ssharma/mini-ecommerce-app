@@ -13,10 +13,11 @@
 
 <h3>Orders:</h3>
 {% for order in orders %}
-	Order:{{ order.id }}
-	Total:{{ order.total }}
-	Status:{{ order.status}}
-	Paid:{{ order.is_paid }}
+	<b>Order</b>:{{ order.id }}
+	<b>Total</b>:{{ order.total }}
+	<b>Status</b>:{{ order.status}}
+	<b>Paid</b>:{{ order.is_paid }}
+   <b>Time</b>:{{ order.time }}
 	<br>
 {% endfor %}
 

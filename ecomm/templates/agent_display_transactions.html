@@ -13,9 +13,9 @@
 
 <h3>Transactions:</h3>
 {% for ledgerEntry in ledgerEntries %}
-	Time:{{ ledgerEntry.date_time }}
-	Amount:{{ ledgerEntry.amount }}
-	Balance:{{ ledgerEntry.balance }}
+	<b>Time</b>:{{ ledgerEntry.transaction_date }}
+	<b>Amount</b>:{{ ledgerEntry.amount }}
+	<b>Balance</b>:{{ ledgerEntry.balance }}
 	<br>
 {% endfor %}
 

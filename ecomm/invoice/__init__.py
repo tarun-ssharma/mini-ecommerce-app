@@ -1,1 +1,1 @@
-from ecomm.invoice.models import Invoice, OrderStates, CartSkus, OrderSkus
+from ecomm.invoice.models import Invoice, CartSkus, OrderSkus

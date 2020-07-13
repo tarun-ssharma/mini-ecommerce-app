@@ -6,6 +6,7 @@ from ecomm.products.views import get_all_products
 from flask import Blueprint, request, render_template, session, redirect, url_for, flash
 from ecomm import db
 
+#Initialize the blueprint
 admin_bp = Blueprint('admin',__name__)
 
 def is_logged_in():
@@ -15,12 +16,18 @@ def is_admin():
 	return ('role' in session) and (session['role'] == 'ADMIN')
 
 def get_all_agents():
+	'''
+	Get a List of all agents.
+	'''
 	agents = {}
 	for agent in Agent.query.all():
 		agents[agent.id] = agent
 	return agents
 
 def get_all_customers():
+	'''
+	Get a List of all customers.
+	'''
 	customers = {}
 	for customer in Customer.query.all():
 		customers[customer.id] = customer
@@ -28,6 +35,9 @@ def get_all_customers():
 
 @admin_bp.route('/login',methods=['GET','POST'])
 def login():
+	'''
+	Handles login for admin user.
+	'''
 	if request.method == 'POST':
 		if(request.form['pwd'] != 'admin'):
 			#TODO: query db 
@@ -44,6 +54,9 @@ def login():
 @admin_bp.route('/')
 @admin_bp.route('/home')
 def home():
+	'''
+	Renders home page of the admin user.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
@@ -52,6 +65,9 @@ def home():
 
 @admin_bp.route('/logout')
 def logout():
+	'''
+	Handles logout for admin user.
+	'''
 	session.pop('username', None)
 	session.pop('role', None)
 	flash('Logged out successfully!')
@@ -59,14 +75,15 @@ def logout():
 
 @admin_bp.route('/addAgent',methods=['GET','POST'])
 def add_agent():
+	'''
+	Add a new user in agent role.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
 		if request.method == 'POST':
-			#If id exists, flash(already exists)
 			password = request.form['pwd']
 			username = request.form['user']
-			#make sure this is None when no field sent
 			email = request.form['email']
 			first_name = request.form['firstName']
 			last_name = request.form['lastName']
@@ -94,7 +111,6 @@ def add_agent():
 					return redirect(url_for('admin.home'))
 				else:
 					flash('An agent with the same username already exists.')
-					#use AJAX
 					render_template('admin_add_customer.html')
 		else:
 			return render_template('admin_add_agent.html')
@@ -102,6 +118,9 @@ def add_agent():
 
 @admin_bp.route('/addCustomer',methods=['GET','POST'])
 def add_customer():
+	'''
+	Add a new user in customer role.
+	'''
 	if (not is_logged_in()) or (not is_admin()):
 		return redirect(url_for('admin.login'))
 	else:
@@ -119,7 +138,6 @@ def add_customer():
 			if(not username or not password or not phone):
 				#basic empty field validation
 				flash('Incomplete credentials. Please try again.')
-				#use AJAX
 				return render_template('admin_add_customer.html')
 			else:
 				customer = Customer.query.filter_by(username=username).first()

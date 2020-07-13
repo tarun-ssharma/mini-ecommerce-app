@@ -1,17 +1,6 @@
 from ecomm import db
 from ecomm import app
 
-'''
-Requirements:
-- updatable -- prod descr., price, stock level, status
-- can add a new product
-- can update an existing product
-- can add a SKU to cart
-- last price(if ordered) shown for every sku in cart
-- only in_stock skus allowed to be ordered
-- an Invoice : has multiple skus
-'''
-
 class Product(db.Model):
 	id =  db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(255),nullable=False)
