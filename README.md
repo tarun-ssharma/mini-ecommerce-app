@@ -8,3 +8,9 @@ To run the web app:
 4. Access the agent user at: http://127.0.0.1:5000/agent (Login using added agents in step3)
 5. Access the customer user at: http://127.0.0.1:5000/customer (Login using added customers in step3)
 
+In the existing db, I have created a few orders, a product with two skus and:
+1. Agent with username = 'agent', password='agent'
+2. Customer with phone = 7665424890  , OTP = 1234
+
+To run the application with a fresh db: disable comment [#db.drop_all()] in ecomm/__init__.py
+
